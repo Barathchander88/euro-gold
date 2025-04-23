@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Euro Gold💧 Water Bottle Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Default Light Mode Styles */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    h2 {
+      color: #4e7a8c;
+      margin: 30px 0;
+      text-align: center;
+      font-size: 28px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 1200px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .summary div {
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      flex: 1 1 250px;
+      margin: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .form-container {
+      width: 90%;
+      max-width: 600px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .form-container input {
+      padding: 10px;
+      margin-bottom: 10px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .form-container button {
+      padding: 12px;
+      width: 100%;
+      background-color: #4e7a8c;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .form-container button:hover {
+      background-color: #3a5e71;
+    }
+
+    table {
+      width: 90%;
+      max-width: 1200px;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+      background-color: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #4e7a8c;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .search-bar {
+      margin: 20px;
+      width: 90%;
+      max-width: 600px;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .screenshot-link {
+      margin-top: 30px;
+    }
+
+    .screenshot-link a {
+      color: #4e7a8c;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .screenshot-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Export Section Design */
+    .export-section {
+      width: 90%;
+      max-width: 600px;
+      background-color: #f7f9fc;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #exportExcelBtn {
+      padding: 12px 20px;
+      background-color: #4e7a8c;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      max-width: 200px;
+    }
+
+    #exportExcelBtn:hover {
+      background-color: #3a5e71;
+    }
+
+    /* Dark Mode Styles */
+    body.dark-mode {
+      background-color: #2c2c2c;
+      color: #fff;
+    }
+
+    body.dark-mode h2 {
+      color: #a1c4d3;
+    }
+
+    body.dark-mode .summary div {
+      background-color: #3e3e3e;
+      color: #fff;
+    }
+
+    body.dark-mode .form-container {
+      background-color: #444;
+      color: #fff;
+    }
+
+    body.dark-mode .form-container input {
+      background-color: #555;
+      color: #fff;
+      border: 1px solid #ccc;
+    }
+
+    body.dark-mode table {
+      background-color: #444;
+      color: #fff;
+    }
+
+    body.dark-mode th {
+      background-color: #2a3f44;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 1024px) {
+      h2 {
+        font-size: 24px;
+      }
+
+      .summary div {
+        font-size: 16px;
+      }
+
+      .form-container {
+        width: 95%;
+        padding: 15px;
+      }
+
+      table {
+        width: 100%;
+      }
+
+      th, td {
+        font-size: 12px;
+        padding: 10px;
+      }
+
+      .screenshot-link a {
+        font-size: 16px;
+      }
+
+      /* Export Button on Mobile */
+      #exportExcelBtn {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Euro Gold💧 Water Bottle Tracker</h2>
+
+  <!-- Dark Mode Toggle Button -->
+  <button id="darkModeToggle">Toggle Dark Mode</button>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search by Name..." oninput="searchTable()">
+  </div>
+
+  <div class="summary">
+    <div><strong>Total Supplied:</strong><br> ₹<span id="totalSupplied">0</span></div>
+    <div><strong>Total Paid:</strong><br> ₹<span id="totalPaid">0</span></div>
+    <div><strong>Total Pending:</strong><br> ₹<span id="totalPending">0</span></div>
+  </div>
+
+  <div class="form-container">
+    <form id="entryForm">
+      <input type="text" id="name" placeholder="Customer Name" required>
+      <input type="number" id="bottles" placeholder="Number of Bottles" required>
+      <input type="number" id="rate" placeholder="Rate (₹)" value="35" required>
+      <input type="number" id="amountPaid" placeholder="Amount Paid (₹)" value="0" required>
+      <input type="text" id="totalAmount" placeholder="Total Amount" readonly>
+      <input type="hidden" id="editIndex" value="-1">
+      <button type="submit">Add Entry</button>
+    </form>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Bottles</th>
+        <th>Rate</th>
+        <th>Total</th>
+        <th>Paid</th>
+        <th>Pending</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <div class="screenshot-link">
+    <a href="owner_screenshot.html" target="_blank">→ Upload Payment Screenshots to Owner</a>
+  </div>
+
+  <!-- Export Section -->
+  <div class="export-section">
+    <h3>Export Data</h3>
+    <p>Click the button below to export the data as an Excel file:</p>
+    <button id="exportExcelBtn">Export to Excel</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+  <script>
+    const entryForm = document.getElementById('entryForm');
+    const nameInput = document.getElementById('name');
+    const bottlesInput = document.getElementById('bottles');
+    const rateInput = document.getElementById('rate');
+    const amountPaidInput = document.getElementById('amountPaid');
+    const totalAmountInput = document.getElementById('totalAmount');
+    const tableBody = document.getElementById('tableBody');
+    const totalSuppliedSpan = document.getElementById('totalSupplied');
+    const totalPaidSpan = document.getElementById('totalPaid');
+    const totalPendingSpan = document.getElementById('totalPending');
+    const editIndexInput = document.getElementById('editIndex');
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const exportExcelBtn = document.getElementById('exportExcelBtn');
+    const searchInput = document.getElementById('searchInput');
+
+    let records = JSON.parse(localStorage.getItem('records')) || [];
+
+    function updateTotalField() {
+      const bottles = parseInt(bottlesInput.value) || 0;
+      const rate = parseFloat(rateInput.value) || 0;
+      let total = bottles * rate;
+
+      if (bottles % 3 === 0 && bottles > 0) {
+        total = Math.floor(total / 100) * 100;
+      }
+
+      totalAmountInput.value = total.toFixed(2);
+    }
+
+    bottlesInput.addEventListener('input', updateTotalField);
+    rateInput.addEventListener('input', updateTotalField);
+
+    function renderTable() {
+      tableBody.innerHTML = '';
+      let totalSupplied = 0;
+      let totalPaid = 0;
+      let totalPending = 0;
+
+      records.forEach((record, index) => {
+        const pendingDisplay = record.pending === 0 ? '✔️' : `₹${record.pending.toFixed(2)}`;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${record.name}</td>
+          <td>${record.bottles}</td>
+          <td>₹${record.rate}</td>
+          <td>₹${record.total.toFixed(2)}</td>
+          <td>₹${record.paid.toFixed(2)}</td>
+          <td style="color:${record.pending === 0 ? 'green' : 'red'}">${pendingDisplay}</td>
+          <td>${new Date(record.date).toLocaleString()}</td>
+          <td>
+            <button onclick="editRecord(${index})">Edit</button>
+            <button onclick="deleteRecord(${index})">Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+
+        totalSupplied += record.total;
+        totalPaid += record.paid;
+        totalPending += record.pending;
+      });
+
+      totalSuppliedSpan.textContent = totalSupplied.toFixed(2);
+      totalPaidSpan.textContent = totalPaid.toFixed(2);
+      totalPendingSpan.textContent = totalPending.toFixed(2);
+    }
+
+    entryForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = nameInput.value;
+      const bottles = parseInt(bottlesInput.value);
+      const rate = parseFloat(rateInput.value);
+      const paid = parseFloat(amountPaidInput.value);
+      let total = bottles * rate;
+      if (bottles % 3 === 0 && bottles > 0) {
+        total = Math.floor(total / 100) * 100;
+      }
+      const pending = total - paid;
+
+      const record = {
+        name, bottles, rate, total, paid, pending,
+        date: new Date()
+      };
+
+      const editIndex = parseInt(editIndexInput.value);
+      if (editIndex !== -1) {
+        records[editIndex] = record;
+        editIndexInput.value = -1;
+      } else {
+        records.unshift(record);
+      }
+
+      localStorage.setItem('records', JSON.stringify(records));
+      renderTable();
+      entryForm.reset();
+      totalAmountInput.value = '';
+    });
+
+    function editRecord(index) {
+      const record = records[index];
+      if (!record) return;
+      nameInput.value = record.name;
+      bottlesInput.value = record.bottles;
+      rateInput.value = record.rate;
+      amountPaidInput.value = record.paid;
+      totalAmountInput.value = record.total.toFixed(2);
+      editIndexInput.value = index;
+    }
+
+    function deleteRecord(index) {
+      if (confirm("Delete this entry?")) {
+        records.splice(index, 1);
+        localStorage.setItem('records', JSON.stringify(records));
+        renderTable();
+      }
+    }
+
+    // Search Table Functionality
+    function searchTable() {
+      const query = searchInput.value.toLowerCase();
+      const filteredRecords = records.filter(record => record.name.toLowerCase().includes(query));
+      renderFilteredTable(filteredRecords);
+    }
+
+    function renderFilteredTable(filteredRecords) {
+      tableBody.innerHTML = '';
+      let totalSupplied = 0;
+      let totalPaid = 0;
+      let totalPending = 0;
+
+      filteredRecords.forEach((record, index) => {
+        const pendingDisplay = record.pending === 0 ? '✔️' : `₹${record.pending.toFixed(2)}`;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${record.name}</td>
+          <td>${record.bottles}</td>
+          <td>₹${record.rate}</td>
+          <td>₹${record.total.toFixed(2)}</td>
+          <td>₹${record.paid.toFixed(2)}</td>
+          <td style="color:${record.pending === 0 ? 'green' : 'red'}">${pendingDisplay}</td>
+          <td>${new Date(record.date).toLocaleString()}</td>
+          <td>
+            <button onclick="editRecord(${index})">Edit</button>
+            <button onclick="deleteRecord(${index})">Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+
+        totalSupplied += record.total;
+        totalPaid += record.paid;
+        totalPending += record.pending;
+      });
+
+      totalSuppliedSpan.textContent = totalSupplied.toFixed(2);
+      totalPaidSpan.textContent = totalPaid.toFixed(2);
+      totalPendingSpan.textContent = totalPending.toFixed(2);
+    }
+
+    // Dark Mode Toggle
+    darkModeToggle.addEventListener('click', function () {
+      document.body.classList.toggle('dark-mode');
+    });
+
+    // Excel Export
+    exportExcelBtn.addEventListener('click', function () {
+      const ws = XLSX.utils.table_to_sheet(document.querySelector('table'));
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Water Bottle Tracker");
+      XLSX.writeFile(wb, 'Water_Bottle_Tracker.xlsx');
+    });
+
+    renderTable();
+  </script>
+
+</body>
+</html>
