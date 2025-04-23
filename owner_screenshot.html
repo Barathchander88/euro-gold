@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Owner Screenshot Upload</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f7f9fc;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #4e7a8c;
+      margin-bottom: 30px;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    input, textarea {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 14px;
+      background-color: #4e7a8c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 2px;
+    }
+    button:hover {
+      background-color: #3a5e71;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 40px;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      padding: 14px;
+      text-align: center;
+    }
+    th {
+      background-color: #4e7a8c;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    .summary {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    img {
+      max-height: 80px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h2>📷 Owner Screenshot Upload</h2>
+
+  <div class="form-container">
+    <form id="uploadForm">
+      <input type="number" id="bottleCount" placeholder="Number of Bottles" required />
+      <input type="number" id="bottleRate" placeholder="Rate per Bottle (₹)" value="35" required />
+      <input type="number" id="amountPaid" placeholder="Amount Paid (₹)" required />
+      <input type="number" id="amountToBePaid" placeholder="Amount to be Paid (₹)" readonly />
+      <textarea id="description" placeholder="Additional Notes (Optional)"></textarea>
+      <input type="file" id="screenshot" accept="image/*" />
+      <button type="submit">Save Entry</button>
+    </form>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>No. of Bottles</th>
+        <th>Rate (₹)</th>
+        <th>Total (₹)</th>
+        <th>Paid (₹)</th>
+        <th>Pending (₹)</th>
+        <th>Screenshot</th>
+        <th>Notes</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="screenshotTableBody"></tbody>
+  </table>
+
+  <div class="summary">
+    <div><strong>Total Value:</strong> ₹<span id="totalValue">0</span></div>
+    <div><strong>Total Paid:</strong> ₹<span id="totalPaid">0</span></div>
+    <div><strong>Total Pending:</strong> ₹<span id="totalPending">0</span></div>
+  </div>
+
+  <script>
+    window.onload = () => {
+      const form = document.getElementById('uploadForm');
+      const bottleCountInput = document.getElementById('bottleCount');
+      const bottleRateInput = document.getElementById('bottleRate');
+      const amountPaidInput = document.getElementById('amountPaid');
+      const amountToBePaidInput = document.getElementById('amountToBePaid');
+      const descriptionInput = document.getElementById('description');
+      const screenshotInput = document.getElementById('screenshot');
+      const screenshotTableBody = document.getElementById('screenshotTableBody');
+
+      let screenshotRecords = JSON.parse(localStorage.getItem('screenshotRecords')) || [];
+      let editIndex = null;
+
+      // Calculate Amount to be Paid
+      function calculateAmountToBePaid() {
+        const count = parseInt(bottleCountInput.value) || 0;
+        const rate = parseFloat(bottleRateInput.value) || 0;
+        const paid = parseFloat(amountPaidInput.value) || 0;
+        const total = count * rate;
+        amountToBePaidInput.value = (total - paid).toFixed(2);
+      }
+
+      bottleCountInput.addEventListener('input', calculateAmountToBePaid);
+      bottleRateInput.addEventListener('input', calculateAmountToBePaid);
+      amountPaidInput.addEventListener('input', calculateAmountToBePaid);
+
+      // Render data into the table
+      function renderScreenshotTable() {
+        screenshotTableBody.innerHTML = '';  // Clear table body
+        let totalValue = 0, totalPaid = 0, totalPending = 0;
+
+        screenshotRecords.forEach((record, index) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${record.bottleCount}</td>
+            <td>₹${record.bottleRate}</td>
+            <td>₹${isNaN(record.total) ? 0 : record.total.toFixed(2)}</td>
+            <td>₹${isNaN(record.amountPaid) ? 0 : record.amountPaid.toFixed(2)}</td>
+            <td>₹${isNaN(record.amountToBePaid) ? 0 : record.amountToBePaid.toFixed(2)}</td>
+            <td>${record.screenshotUrl ? `<img src="${record.screenshotUrl}" />` : '—'}</td>
+            <td>${record.description || ''}</td>
+            <td>
+              <button onclick="editRecord(${index})">Edit</button>
+              <button onclick="deleteRecord(${index})" style="background:red;">Delete</button>
+            </td>
+          `;
+          screenshotTableBody.appendChild(row);
+
+          totalValue += isNaN(record.total) ? 0 : record.total;
+          totalPaid += isNaN(record.amountPaid) ? 0 : record.amountPaid;
+          totalPending += isNaN(record.amountToBePaid) ? 0 : record.amountToBePaid;
+        });
+
+        // Update the summary
+        document.getElementById('totalValue').textContent = totalValue.toFixed(2);
+        document.getElementById('totalPaid').textContent = totalPaid.toFixed(2);
+        document.getElementById('totalPending').textContent = totalPending.toFixed(2);
+      }
+
+      // Edit Record
+      window.editRecord = function (index) {
+        const record = screenshotRecords[index];
+        bottleCountInput.value = record.bottleCount;
+        bottleRateInput.value = record.bottleRate;
+        amountPaidInput.value = record.amountPaid;
+        amountToBePaidInput.value = record.amountToBePaid;
+        descriptionInput.value = record.description;
+        editIndex = index;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      // Delete Record
+      window.deleteRecord = function (index) {
+        if (confirm('Are you sure you want to delete this entry?')) {
+          screenshotRecords.splice(index, 1);
+          localStorage.setItem('screenshotRecords', JSON.stringify(screenshotRecords));
+          renderScreenshotTable();
+        }
+      };
+
+      // Save Entry
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const bottleCount = parseInt(bottleCountInput.value);
+        const bottleRate = parseFloat(bottleRateInput.value);
+        const amountPaid = parseFloat(amountPaidInput.value);
+        const total = bottleCount * bottleRate;
+        const amountToBePaid = total - amountPaid;
+        const description = descriptionInput.value;
+
+        const handleSave = (screenshotUrl) => {
+          const record = {
+            bottleCount,
+            bottleRate,
+            total,
+            amountPaid,
+            amountToBePaid,
+            description,
+            screenshotUrl
+          };
+
+          if (editIndex !== null) {
+            screenshotRecords[editIndex] = record;
+            editIndex = null;
+          } else {
+            screenshotRecords.push(record);
+          }
+
+          // Save to localStorage
+          localStorage.setItem('screenshotRecords', JSON.stringify(screenshotRecords));
+          form.reset();
+          amountToBePaidInput.value = '';
+          renderScreenshotTable();
+        };
+
+        // If a screenshot is uploaded, handle it
+        if (screenshotInput.files.length > 0) {
+          const reader = new FileReader();
+          reader.onload = (e) => handleSave(e.target.result);
+          reader.readAsDataURL(screenshotInput.files[0]);
+        } else {
+          const existingScreenshot = editIndex !== null ? screenshotRecords[editIndex].screenshotUrl : null;
+          handleSave(existingScreenshot);
+        }
+      });
+
+      // Initial Render
+      renderScreenshotTable();
+    };
+  </script>
+</body>
+</html>
